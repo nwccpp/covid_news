@@ -101,5 +101,5 @@ df_na_scraped = pd.DataFrame(rows)
 ##save as backup
 df_na_scraped.to_csv('my_scraped_articles_v2.csv')
 
-dfmaster2 = dfmaster.merge(df_na_scraped, left_on='link', right_on='link')
+dfmaster2 = dfmaster.merge(df_na_scraped,  how='left', left_on='link', right_on='link')
 dfmaster2.to_csv('my_scraped_articles_master_FV.csv')

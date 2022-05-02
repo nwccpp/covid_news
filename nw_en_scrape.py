@@ -15,48 +15,46 @@ import os
 import time
 from time import sleep
 
-df = pd.read_csv (r'/XXXXXXX/Covid_Master.csv', encoding = "ISO-8859-1", engine='python')
-list_of_urls = df['link'].tolist()
+dfmain = pd.read_csv (r'/XXXXXXX/Covid_Master.csv', encoding = "ISO-8859-1", engine='python')
+list_of_urls = dfmain['link'].tolist()
+
+list_of_urls = dfmain['link'].tolist()
 
 rows = []
-for url in list_of_urls:
+for link in list_of_urls:
     try:
-        a = Article(url="%s" % (url), language='en')
+        a = Article(url="%s" % (link), language='en')
         a.download()
         a.parse()
          
         author = a.authors
-        date = a.publish_date
         text = a.text
         title = a.title
-        keywords = a.keywords
         
         
-        row = {'url':url,
+        row = {'url':link,
                'author':author,
-               'data':date,
                'text':text,
-               'title': title, 
-               'keywords':keywords}
+               'title': title}
         
         rows.append(row)
     except Exception as e:
         print(e)
-        row = {'url':url,
+        row = {'url':link,
         'author':'N/A',
-        'date':'N/A',
         'text':'N/A',
-        'title': 'N/A',
-        'keywords': 'N/A'}
+        'title': 'N/A'}
         
         rows.append(row)
 
 df_v1 = pd.DataFrame(rows)
-df_v1.to_csv('my_scraped_articles_master.csv')
 
-dfmaster = dfmain.merge(df_v1, left_on='url', right_on='url')
+df_v1.to_csv('my_scraped_articles_raw_russian.csv')
+
+dfmaster = dfmain.merge(df_v1, left_on='link', right_on='url')
 dfmaster.to_csv('my_scraped_articles_master_v1.csv')
 
+###run n/a's with beautoful soup
 df_na = df_v1.loc[df_v1['text'] == 'N/A']
 
 list_of_urls = df_na['url'].tolist()
@@ -101,7 +99,7 @@ for link in list_of_urls:
 df_na_scraped = pd.DataFrame(rows)
 
 ##save as backup
-df_na_scraped.to_csv('my_scraped_articles.csv')
+df_na_scraped.to_csv('my_scraped_articles_v2.csv')
 
-dfmaster = dfmain.merge(df_na_scraped, left_on='url', right_on='link')
-dfmaster.to_csv('my_scraped_articles_master_FV.csv')
+dfmaster2 = dfmaster.merge(df_na_scraped, left_on='link', right_on='link')
+dfmaster2.to_csv('my_scraped_articles_master_FV.csv')
